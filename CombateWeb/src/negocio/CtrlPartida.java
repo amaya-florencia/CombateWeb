@@ -14,6 +14,8 @@ public class CtrlPartida {
 	private int energiaOriginal1;
 	private int energiaOriginal2;
 	private int puntosGanador = 10;
+	private CtrlABMCPersonaje ctrl;
+	private String mensajes = "";
 
 	public int getVidaOriginal1() {
 		return vidaOriginal1;
@@ -51,83 +53,119 @@ public class CtrlPartida {
 	public void setPersonaje2(Personaje personaje2) {
 		this.personaje2 = personaje2;
 	}
+	
 	public CtrlPartida(){
 		personaje1 = null;
 		personaje2 = null;	
 	}
 	public CtrlPartida(Personaje per1,Personaje per2){
-		personaje1 = per1;
-		personaje2=per2;
+		this.setPersonaje1(per1);
+		this.setPersonaje2(per2);
 		//guardo los valores originales para el update 
-		this.setVidaOriginal1(personaje1.getVida());
-		this.setVidaOriginal2(personaje2.getVida());
-		this.setEnergiaOriginal1(personaje1.getVida());
-		this.setEnergiaOriginal2(personaje2.getVida());	
+		this.setVidaOriginal1(this.getPersonaje1().getVida());
+		this.setVidaOriginal2(this.getPersonaje2().getVida());
+		this.setEnergiaOriginal1(this.getPersonaje1().getEnergia());
+		this.setEnergiaOriginal2(this.getPersonaje2().getEnergia());
 		
 	}
-	public void defensa(Personaje personajeActual) throws ApplicationException{
+	public String defensaEnergia(Personaje defensor) throws ApplicationException{
+		String rta = "";
+		int energia;
+		//valido que personaje esta defendiendo	
+			if(defensor.getIdPersonaje()==personaje1.getIdPersonaje()){ 			
+				int energiaRecuperada = this.getEnergiaOriginal1()*defensor.getDefensa()/100; 	
+				// si la energia recuperada supera la original,
+					if(energiaRecuperada + defensor.getEnergia() > this.getEnergiaOriginal1()){ 
+					// seteo el valor maximo que puede recuperar que es el original
+						energia = this.getEnergiaOriginal1();
+						rta = "Haz recuperado tu energia original!";
+						this.agregarMensaje(rta);
+					}else{
+					//si no seteo lo calculado mas lo que tenia de energia el personaje en el momento
+						energia = energiaRecuperada + defensor.getEnergia(); 																				
+						rta = "Haz recuperado" + energiaRecuperada + "de energia";
+						this.agregarMensaje(rta);
+				}
+				defensor.setEnergia(energia);
+			}else{ //si el defensor es el personaje 2
+				int energiaRecuperada = this.getEnergiaOriginal2()*defensor.getDefensa()/100;				
+				
+					if(energiaRecuperada +  defensor.getEnergia() > this.getEnergiaOriginal2()){
+						energia = this.getEnergiaOriginal2();
+						rta = "Haz recuperado tu energia original!";
+						this.agregarMensaje(rta);
+					}else{
+						energia = energiaRecuperada + defensor.getEnergia();
+						rta = "Haz recuperado tu energia original!";
+						this.agregarMensaje(rta);
+				}		
+					defensor.setEnergia(energia);//guardo valores en el ctrl
+			}			
+			
+			return rta;	
 		
-			if(personajeActual.getIdPersonaje()==personaje1.getIdPersonaje()){ //valido que personaje esta atacando
-				
-				int energiaRecuperada = this.getEnergiaOriginal1()*personajeActual.getDefensa()/100; 
-				int vidaRecuperada = this.getVidaOriginal1()*personajeActual.getDefensa()/250;
-				
-				if(energiaRecuperada + personajeActual.getEnergia() > this.getEnergiaOriginal1()){ // si la energia recuperada supera la original
-					personajeActual.setEnergia(this.getEnergiaOriginal1());//seteo el valor maximo que puede recuperar que es el original
-				}else{
-					personajeActual.setEnergia(energiaRecuperada + personajeActual.getEnergia());//si no seteo lo calculado mas lo que tenia de energia el personaje en el momento
-				}
-				//lo mismo para la vida
-				if(vidaRecuperada +  personajeActual.getVida() > this.getVidaOriginal1()){
-					personajeActual.setVida(this.getVidaOriginal1());
-				}else{
-					personajeActual.setVida(vidaRecuperada + personajeActual.getVida());
-				}			
-				this.setPersonaje1(personajeActual); //guardo valores en el ctrl
-				
-			}else{ //si el atacante es el otro personaje
-				int energiaRecuperada = this.getEnergiaOriginal2()*personajeActual.getDefensa()/100;
-				int vidaRecuperada = this.getVidaOriginal2()*personajeActual.getDefensa()/250;
-				
-				if(energiaRecuperada +  personajeActual.getEnergia() > this.getEnergiaOriginal2()){
-					personajeActual.setEnergia(this.getEnergiaOriginal2());
-				}else{
-					personajeActual.setEnergia(energiaRecuperada + personajeActual.getEnergia());
-				}
-				
-				if(vidaRecuperada +  personajeActual.getVida() > this.getVidaOriginal2()){
-					personajeActual.setVida(this.getVidaOriginal2());
-				}else{
-					personajeActual.setVida(vidaRecuperada + personajeActual.getVida());
-				}
-				this.setPersonaje2(personajeActual); //guardo valores en el ctrl
+	}
+	public String defensaVida(Personaje defensor){
+		String rta = "";	
+		int vida;
+		if(defensor.getIdPersonaje()==personaje1.getIdPersonaje()){ //valido que personaje esta atacando
+			
+			int vidaRecuperada = this.getVidaOriginal1()*defensor.getDefensa()/250;					
+			
+			if(vidaRecuperada +  defensor.getVida() > this.getVidaOriginal1()){
+				vida = this.getVidaOriginal1();
+				rta = "Haz recuperado tu vida original!";
+				this.agregarMensaje(rta);
+			}else{
+				vida = vidaRecuperada + defensor.getVida();
+				rta = "Haz recuperado" + vida + "vida!";
+				this.agregarMensaje(rta);
+			}			
+			defensor.setVida(vida); //guardo valores en el ctrl
+			
+		}else{ //si el atacante es el otro personaje
+			
+			int vidaRecuperada = this.getVidaOriginal2()*defensor.getDefensa()/250;			
+			
+			if(vidaRecuperada +  defensor.getVida() > this.getVidaOriginal2()){
+				vida = this.getVidaOriginal2();
+				rta = "Haz recuperado tu vida original!";
+				this.agregarMensaje(rta);
+			}else{
+				vida = vidaRecuperada + defensor.getVida();
+				rta = "Haz recuperado" + vida + "vida!";
+				this.agregarMensaje(rta);
 			}
-				
-			throw new ApplicationException(personajeActual.getNombrePersonaje()+" recupera " + personajeActual.getEnergia() + " de energia y " 
-							+ personajeActual.getVida() + " de vida.");
+			defensor.setVida(vida); //guardo valores en el ctrl
+		}	
+		return rta;
+
+}
 	
-		
-	}
-	
-	public void ataque(int energiaAtaque,Personaje atacante, Personaje defensor) throws ApplicationException{
-		
-			atacante.setEnergia(atacante.getEnergia() - energiaAtaque);	
-			boolean evade =this.defensorEvade(energiaAtaque,defensor);
+	public String ataque(int energiaAtaque,Personaje atacante, Personaje defensor) throws ApplicationException{
+		String rta = "";
+		atacante.setEnergia(atacante.getEnergia() - energiaAtaque);	
+		boolean evade =this.defensorEvade(energiaAtaque,defensor);
 			if(!evade){ //si el defensor no evade
 				//le resto a la vida la energia de ataque
 				int vidaRestante = defensor.getVida() - energiaAtaque;
-				if (vidaRestante > 0){		//si no perdio toda la vida			
-					defensor.setVida(vidaRestante);		//seteo nuevo valor de vida				
-					throw new ApplicationException("El ataque es efectivo!!  "+ 
-								defensor.getNombrePersonaje()+"pierde "+energiaAtaque + "  puntos de vida");
-	
-				}else{			
-						defensor.setVida(0);//si perdio seteo la vida en cero
-						throw new ApplicationException("Felicitaciones! Has derrotado a "+defensor.getNombrePersonaje());						
+				//si no perdio toda la vida	
+					if (vidaRestante > 0){				
+						defensor.setVida(vidaRestante);		//seteo nuevo valor de vida				
+						rta = "El ataque es efectivo!!  "+ defensor.getNombrePersonaje()+" pierde "+energiaAtaque + "  puntos de vida";	
+						this.agregarMensaje(rta);
+					}else{									
+						rta = "Felicitaciones! Has derrotado a "+defensor.getNombrePersonaje()+ "\n" + 
+									atacante.getNombrePersonaje()+ "gana la partida y se le otorgan" + puntosGanador + " puntos";	
+						this.agregarMensaje(rta);
+						this.premio(atacante);				
+						
 				}
-				}else{//cuando evade
-				throw new ApplicationException("Tu ataque ha sido evadido!  "+ defensor.getNombrePersonaje()+" conserva sus puntos de vida ");
-			}			
+			}else{//cuando evade
+			rta = "Tu ataque ha sido evadido!  "+ defensor.getNombrePersonaje()+" conserva sus puntos de vida ";
+			this.agregarMensaje(rta);
+			}	
+			return rta;
 		}	
 	
 	public void premio(Personaje ganador) throws ApplicationException{
@@ -141,8 +179,7 @@ public class CtrlPartida {
 			ganador.setPuntosTotales(this.getPersonaje2().getPuntosTotales() + puntosGanador );
 		}
 		CtrlABMCPersonaje ctrlPersonaje = new CtrlABMCPersonaje();
-		ctrlPersonaje.update(ganador); // llamo al ctrl de personaje para que haga el update
-		throw new ApplicationException("Felicitaciones! "+ganador.getNombrePersonaje()+" has ganado 10 puntos");	
+		ctrlPersonaje.update(ganador); // llamo al ctrl de personaje para que haga el update		
 	}
 	
 	public boolean defensorEvade(int energiaAtaque,Personaje defensor){
@@ -156,4 +193,13 @@ public class CtrlPartida {
 		}
 		return evade;
 	}
+
+	public void agregarMensaje(String rta) {
+		this.mensajes += (rta + "<br/>");
+	}
+	
+	public String getMensajes() {
+		return mensajes;
+	}
+	
 }
