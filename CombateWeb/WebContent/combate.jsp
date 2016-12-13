@@ -43,15 +43,15 @@
 </head>
 <body>
 
-	<form id="formPersonajes" action="SeleccionarPersonaje" method="post" >
+	<form id="formPersonajes" action="SeleccionarPersonaje" method="post" onsubmit="return validaDatos();" >
 		<table align="center">		
 		<tr>
 				<td> <label>Player number one: </label> </td>
-				<td> <input type="text" name="txtJugador1" required> </td>
+				<td> <input type="text" name="txtJugador1" id="txtJugador1" required> </td>
 				<td></td>
 				<td><label>Player number two: </label></td>
-				<td><input type="text" name="txtJugador2" required></td>
-				<td><button type="submit" class="button expanded" value="start">start</button></td>
+				<td><input type="text" name="txtJugador2" id="txtJugador2" required></td>
+				<td><button type="submit" class="button expanded" value="start" >start</button></td>
 		</tr>		
 		</table>
  </form>
