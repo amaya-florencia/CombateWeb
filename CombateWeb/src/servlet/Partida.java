@@ -10,7 +10,11 @@ import javax.servlet.http.HttpServletResponse;
 import util.ApplicationException;
 import negocio.CtrlPartida;
 
-
+			/*Integrantes del grupo: 
+			Amaya, Florencia
+			García , María Belén 
+			Zorzi, Ornella Daniela
+			*/
 /**
  * Servlet implementation class Partida
  */
